@@ -34,8 +34,9 @@ const list = [
 
 // React have component hierarchies. App (root component) is the parent componentof the list and Search, so the List and Search are child components.
 function App() { // Or "const App = () => { ... }"
-  console.log('re-render App')
   // re-rendered when it updates
+  console.log('re-render App')
+
   const title = 'React'
   const stories = [
     {
@@ -56,14 +57,30 @@ function App() { // Or "const App = () => { ... }"
     },
   ];
 
+  // const [searchTerm, setSearchTerm] = React.useState('');  
+  // const [searchTerm, setSearchTerm] = React.useState(
+  //   localStorage.getItem('search') || 'React'
+  // );
+  const [searchTerm, setSearchTerm] = useSemiPersistentState(
+    'search',
+    'React'
+  );
+  // trigger the side-effect each time searchTerm changes
+  // if array is an empty, function for the side-effect called once, after the component renders the first time
+  React.useEffect(() => {
+    console.log('use effect')
+    localStorage.setItem('search', searchTerm);
+  }, [searchTerm]);
 
-  // const [searchTerm, setSearchTerm] = React.useState('');
-  const [searchTerm, setSearchTerm] = React.useState('React');
+
+
+
   // callback handler
   const handleSearch = (event) => {
     console.log('handleSearch from App')
     console.log(event.target.value);
     setSearchTerm(event.target.value);
+    // localStorage.setItem('search', event.target.value);
   };
 
   const searchedStories = stories.filter((story) =>
@@ -120,7 +137,7 @@ const List = ({ list }) => {
   return (
     <>
       <ul>
-        {list.map(function (item) {
+        {list && list.map(function (item) {
           return (
             <li key={item.objectID}>
               <span>
@@ -137,7 +154,7 @@ const List = ({ list }) => {
       <h1>With props</h1>
       <ul>
         { /* using props */}
-        {list.map((item) => (
+        {list && list.map((item) => (
           <Item key={item.objectID} item={item} />
         ))}
       </ul>
@@ -201,5 +218,16 @@ function Search(props)/*or: ({ search, onSearch }) */ {
     </div>
   );
 }
+// Custom hook
+const useSemiPersistentState = (key, initialState) => {
+  const [value, setValue] = React.useState(
+    localStorage.getItem(key) || initialState
+  );
+  React.useEffect(() => {
+    localStorage.setItem(key, value);
+  }, [value, key]);
+
+  return [value, setValue];
+};
 
 export default App;
