@@ -67,10 +67,10 @@ function App() { // Or "const App = () => { ... }"
   );
   // trigger the side-effect each time searchTerm changes
   // if array is an empty, function for the side-effect called once, after the component renders the first time
-  React.useEffect(() => {
-    console.log('use effect')
-    localStorage.setItem('search', searchTerm);
-  }, [searchTerm]);
+  // React.useEffect(() => {
+  //   console.log('use effect')
+  //   localStorage.setItem('search', searchTerm);
+  // }, [searchTerm]);
 
 
 
@@ -95,8 +95,14 @@ function App() { // Or "const App = () => { ... }"
         {welcome.greeting} {welcome.title}
       </h1>
       <h1>Hello {getTitle('React')}</h1>
-      <label htmlFor="search">Search: </label>
-      <input id="search" type="text" />
+      {/* <label htmlFor="search">Search: </label>
+      <input id="search" type="text" /> */}
+      <InputWithLabel
+        id="search"
+        label="Search"
+        value={searchTerm}
+        onInputChange={handleSearch}
+      />
       <br />
       <h1>Hello {titleTwo}</h1>
       <br />
@@ -229,5 +235,24 @@ const useSemiPersistentState = (key, initialState) => {
 
   return [value, setValue];
 };
+
+const InputWithLabel = ({
+  id,
+  label,
+  value,
+  type = 'text',
+  onInputChange,
+}) => (
+  <>
+    <label htmlFor={id}>{label}</label>
+    &nbsp;
+    <input
+      id={id}
+      type={type}
+      value={value}
+      onChange={onInputChange}
+    />
+  </>
+);
 
 export default App;
